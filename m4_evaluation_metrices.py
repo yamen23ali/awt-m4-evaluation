@@ -52,3 +52,9 @@ def msis(insample, yTrue, yLower, yUpper):
     penalty = penalty / (yTrue.shape[0] * ts_naive_err)
     
     return penalty.mean()
+    
+def sMAPE(predY, trueY):
+    predY = predY.flatten()
+    trueY = trueY.flatten()
+    sumf = np.sum(np.abs(predY - trueY) / (np.abs(predY) + np.abs(trueY)))
+    return (200 *sumf / len(trueY))

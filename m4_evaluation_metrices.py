@@ -20,13 +20,17 @@ def m4_mase(in_sample, yTrue, yPred):
     return np.mean(err)
 
 
-def acd(yTrue, yLower, yUpper):
+def coverage(yTrue, yLower, yUpper):
     covered_from_lower = yTrue >= yLower
     covered_from_upper = yTrue <= yUpper
     covered = covered_from_lower & covered_from_upper
 
-    return abs( covered.sum() / yTrue.shape[0] - 0.95)
+    return covered.sum()
 
+def acd(intervals_coverage, data_points_number):
+
+    return abs( intervals_coverage.sum() / data_points_number - 0.95)
+    
 def msis(insample, yTrue, yLower, yUpper):
     
     ts_naive_err = s_naive_error(insample)

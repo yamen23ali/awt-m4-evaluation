@@ -6,12 +6,13 @@ from m4_evaluation_metrices import *
 from glob import glob
 
 
-def read_raw_data(file_path):
-    df = pd.read_csv(file_path)
-    try:
-        del df['V1']
-    except Exception as e:
-        print('No headers row to remove, will continue..')
+def read_raw_data(file_path, no_headers = False):
+    if no_headers:
+        df = pd.read_csv(file_path, header=None)
+    else:
+        df = pd.read_csv(file_path)
+
+    if 'V1' in df : del df['V1']
     
     return df.values
 
@@ -26,7 +27,7 @@ def evaluate_point_predictions(train_data, test_data, point_predcitions):
     return np.array(errors).mean()
 
 def evaluate_intervals_predictions(train_data, test_data, lower_predcitions, upper_predcitions):
-    acd_coverage = []
+    series_coverage = []
     msis_errors = []
 
     samples = zip(train_data, test_data, lower_predcitions, upper_predcitions)
@@ -34,36 +35,38 @@ def evaluate_intervals_predictions(train_data, test_data, lower_predcitions, upp
     for sample_x, sample_y, sample_lower_prediction, sample_upper_prediction in samples :
         sample_x = sample_x[~np.isnan(sample_x)]
 
-        acd_coverage.append(acd(sample_y, sample_lower_prediction, sample_upper_prediction))
+        series_coverage.append(coverage(sample_y, sample_lower_prediction, sample_upper_prediction))
         msis_errors.append(msis(sample_x, sample_y, sample_lower_prediction, sample_upper_prediction))
 
-    return np.array(acd_coverage).mean(), np.array(msis_errors).mean()
+    acd_err = acd(np.array(series_coverage), test_data.shape[0]*test_data.shape[1])
+
+    return acd_err, np.array(msis_errors).mean()
 
 
 
 train_data = read_raw_data('Dataset/Hourly-train.csv')
 test_data = read_raw_data('Dataset/Hourly-test.csv')
 
-groups = ['SSY']
+groups = ['SSY', 'M4']
 
 for group in groups:
-    print(f'===============Evaluation results for {group}===============')
+    print(f'===============Evaluation results for {group} ===============')
     
-    models = glob(f'{group}/*/')
+    models = glob(f'results/{group}/*/')
 
     for model_path in models:
         print(f'==== For model {model_path}')
 
-        point_predcitions = read_raw_data(f'{model_path}/point.csv')
-        lower_predcitions = read_raw_data(f'{model_path}/lower.csv')
-        upper_predcitions = read_raw_data(f'{model_path}/upper.csv')
+        point_predcitions = read_raw_data(f'{model_path}/point.csv', True)
+        lower_predcitions = read_raw_data(f'{model_path}/lower.csv', True)
+        upper_predcitions = read_raw_data(f'{model_path}/upper.csv', True)
         
 
         mase_err = evaluate_point_predictions(train_data, test_data, point_predcitions)
-        print(f'Point Predcition MASE {mase_err}')
+        print(f'Point Predcition MASE {round(mase_err,3)}')
 
         acd_err, msis_err = evaluate_intervals_predictions(train_data, test_data, lower_predcitions, upper_predcitions)
-        print(f'Interval Predcition ACD {acd_err}')
-        print(f'Interval Predcition MSIS {msis_err} \n')
+        print(f'Interval Predcition ACD {round(acd_err,3)}')
+        print(f'Interval Predcition MSIS {round(msis_err,3)} \n')
 
         

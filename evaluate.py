@@ -57,16 +57,19 @@ for group in groups:
     for model_path in models:
         print(f'==== For model {model_path}')
 
-        point_predcitions = read_raw_data(f'{model_path}/point.csv', True)
-        lower_predcitions = read_raw_data(f'{model_path}/lower.csv', True)
-        upper_predcitions = read_raw_data(f'{model_path}/upper.csv', True)
+        point_predictions = read_raw_data(f'{model_path}/point.csv', True)
+        lower_predictions = read_raw_data(f'{model_path}/lower.csv', True)
+        upper_predictions = read_raw_data(f'{model_path}/upper.csv', True)
         
 
-        mase_err = evaluate_point_predictions(train_data, test_data, point_predcitions)
-        print(f'Point Predcition MASE {round(mase_err,3)}')
+        mase_err = evaluate_point_predictions(train_data, test_data, point_predictions)
+        print(f'Point Prediction MASE {round(mase_err,3)}')
+        
+        smape_err = sMAPE(point_predictions, test_data)
+        print(f'Point Prediction sMape {round(smape_err,3)}')
 
-        acd_err, msis_err = evaluate_intervals_predictions(train_data, test_data, lower_predcitions, upper_predcitions)
-        print(f'Interval Predcition ACD {round(acd_err,3)}')
-        print(f'Interval Predcition MSIS {round(msis_err,3)} \n')
+        acd_err, msis_err = evaluate_intervals_predictions(train_data, test_data, lower_predictions, upper_predictions)
+        print(f'Interval Prediction ACD {round(acd_err,3)}')
+        print(f'Interval Prediction MSIS {round(msis_err,3)} \n')
 
         

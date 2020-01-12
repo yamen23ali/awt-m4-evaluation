@@ -2,7 +2,7 @@
 This is a simple evaluation framework used to compare the results achieved by different groups working on TU Berlin AWT (Advanced Web Technologies) project. The aim of the project is to come up with models to predict the hourly dataset provided by [M4 competition](https://github.com/M4Competition/M4-methods) organizers.
 
 # How to use
-- Add a folder under [results](https://github.com/yamen23ali/awt-m4-evaluation/results) indicating your group name.
+- Add a folder under [results](https://github.com/yamen23ali/awt-m4-evaluation/tree/master/results) indicating your group name.
 
 - Inside your group folder create a folder indicating the model name (e.g. skynet).
 
@@ -15,3 +15,4 @@ This is a simple evaluation framework used to compare the results achieved by di
 python evaluate.py
 ```
 
+After running the script, results of all models from all the groups will be printed. Also results of the naive model and the Smyl ( the best ahcieving model in the M4 competition) will be reported.

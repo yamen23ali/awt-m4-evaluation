@@ -13,7 +13,6 @@ def s_naive_error(x, freq= 24):
 
 def m4_mase(in_sample, yTrue, yPred):
     naive_err = s_naive_error(in_sample)
-    #naive_err[naive_err == 0.0] = 0.001 # Just to avoid getting inf
 
     err = np.abs(yTrue - yPred) / naive_err
     

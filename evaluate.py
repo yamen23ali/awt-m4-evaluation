@@ -43,33 +43,32 @@ def evaluate_intervals_predictions(train_data, test_data, lower_predcitions, upp
     return acd_err, np.array(msis_errors).mean()
 
 
-
-train_data = read_raw_data('Dataset/Hourly-train.csv')
-test_data = read_raw_data('Dataset/Hourly-test.csv')
-
 groups = ['SSY', 'M4']
 
 for group in groups:
     print(f'===============Evaluation results for {group} ===============')
-    
     models = glob(f'results/{group}/*/')
 
     for model_path in models:
-        print(f'==== For model {model_path}')
+        for dataset in ['Test', 'Holdout']:
 
-        point_predictions = read_raw_data(f'{model_path}/point.csv', True)
-        lower_predictions = read_raw_data(f'{model_path}/lower.csv', True)
-        upper_predictions = read_raw_data(f'{model_path}/upper.csv', True)
-        
+            print(f'==== For model {model_path}{dataset}')
 
-        mase_err = evaluate_point_predictions(train_data, test_data, point_predictions)
-        print(f'Point Prediction MASE {round(mase_err,3)}')
-        
-        smape_err = sMAPE(point_predictions, test_data)
-        print(f'Point Prediction sMape {round(smape_err,3)}')
+            train_data = read_raw_data(f'Dataset/{dataset}/Hourly-train.csv')
+            test_data = read_raw_data(f'Dataset/{dataset}/Hourly-test.csv')
 
-        acd_err, msis_err = evaluate_intervals_predictions(train_data, test_data, lower_predictions, upper_predictions)
-        print(f'Interval Prediction ACD {round(acd_err,3)}')
-        print(f'Interval Prediction MSIS {round(msis_err,3)} \n')
+            point_predictions = read_raw_data(f'{model_path}/{dataset}/point.csv', True)
+            lower_predictions = read_raw_data(f'{model_path}/{dataset}/lower.csv', True)
+            upper_predictions = read_raw_data(f'{model_path}/{dataset}/upper.csv', True)
+
+            mase_err = evaluate_point_predictions(train_data, test_data, point_predictions)
+            print(f'Point Prediction MASE {round(mase_err,3)}')
+
+            smape_err = sMAPE(point_predictions, test_data)
+            print(f'Point Prediction sMape {round(smape_err,3)}')
+
+            acd_err, msis_err = evaluate_intervals_predictions(train_data, test_data, lower_predictions, upper_predictions)
+            print(f'Interval Prediction ACD {round(acd_err,3)}')
+            print(f'Interval Prediction MSIS {round(msis_err,3)} \n')
 
         
